@@ -1,7 +1,3 @@
-interface NewHTMLElement extends HTMLElement {
-  refresh: () => void;
-}
-
 type TagType = keyof HTMLElementTagNameMap;
 type ChildrenType = HTMLElement | HTMLElement[];
 type OptionTypeWithChildren<T> = {[key in keyof T]?: unknown} & {children?: ChildrenType };
