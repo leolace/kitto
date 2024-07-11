@@ -46,7 +46,7 @@ const render: RenderType = (tag, options) => {
 
       if (key === "textContent") {
 	element[key] = value;
-      } else if (key === "onclick" && typeof value === "function") {
+      } else if (isHTMLEventName(key) && typeof value === "function") {
 	element[key] = value;
       } else {
 	element.setAttribute(key, value);
@@ -80,3 +80,22 @@ const isHTMLAttribute = <T>(tag: string, target: [unknown, unknown]): target is 
   else return false;
 }
 
+const isHTMLEventName = (value: string): value is keyof HTMLElementEventMap => {
+    const eventNames: Set<string> = new Set([
+    "onabort", "onanimationcancel", "onanimationend", "onanimationiteration", "onauxclick", "onblur", "oncancel",
+    "oncanplay", "oncanplaythrough", "onchange", "onclick", "onclose", "oncontextmenu", "oncuechange", "ondblclick",
+    "ondrag", "ondragend", "ondragenter", "ondragexit", "ondragleave", "ondragover", "ondragstart", "ondrop",
+    "ondurationchange", "onemptied", "onended", "onerror", "onfocus", "onformdata", "ongotpointercapture",
+    "oninput", "oninvalid", "onkeydown", "onkeypress", "onkeyup", "onload", "onloadeddata", "onloadedmetadata",
+    "onloadstart", "onlostpointercapture", "onmousedown", "onmouseenter", "onmouseleave", "onmousemove", "onmouseout",
+    "onmouseover", "onmouseup", "onpause", "onplay", "onplaying", "onprogress", "onratechange", "onreset", "onresize",
+    "onscroll", "onsecuritypolicyviolation", "onseeked", "onseeking", "onselect", "onslotchange", "onstalled",
+    "onsubmit", "onsuspend", "ontimeupdate", "ontoggle", "ontransitioncancel", "ontransitionend", "ontransitionrun",
+    "ontransitionstart", "onvolumechange", "onwaiting", "onwebkitanimationend", "onwebkitanimationiteration",
+    "onwebkitanimationstart", "onwebkittransitionend", "onwheel", "onpointerdown", "onpointermove", "onpointerup",
+    "onpointercancel", "onpointerover", "onpointerout", "onpointerenter", "onpointerleave", "ongotpointercapture",
+    "onlostpointercapture", "onselectstart", "onselectionchange", "onsearch"
+    ]);
+  
+  return eventNames.has(value);
+}

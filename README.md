@@ -1,7 +1,30 @@
+# Kitto
+
+Front-end framework de javascript (uau!!). Objetivo: ser tão simples ao ponto de ser inviável de usar em qualquer projeto. O nome faz uma referência a minha gata que se chama Kit.
+
+## Como começar
+
+```html
+<!-- ./src/index.html -->
+<html>
+	<head><title>Kitto!</title><head>
+	<body>
+		<div id="root"></div>
+		<script src="../dist/index.js"></script>
+		<script src="../dist/app.js"></script>
+	</body>
+</html>
+```
+
+```ts
 const root: HTMLElement | null = document.getElementById("root");
 if (!root) throw new Error("Root is not present on the DOM");
 
-const card = ({ name }: { name: string }) => {
+interface ICard {
+  name: string
+}
+
+const card = ({ name }: ICard) => {
   let count = 0;
 
   return view((el) => div({
@@ -49,4 +72,7 @@ const el = main({
 })
 
 root.appendChild(el);
+```
 
+## Resultado
+![resultado](./src/assets/resultado.png)
