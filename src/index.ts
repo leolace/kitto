@@ -4,20 +4,40 @@ type OptionTypeWithChildren<T> = {[key in keyof T]?: unknown} & {children?: Chil
 type OptionType<T> = {[key in keyof T]?: unknown};
 type RenderType = <T>(tag: TagType, options?: OptionTypeWithChildren<T> | OptionType<T>) => HTMLElement & { refresh: () => void };
 
-const root: HTMLElement | null = document.getElementById("root");
+const view = (children: (callback: HTMLElement & { refresh: () => void }) => ChildrenType) => {
+  const element: HTMLElement & { refresh: () => void } = div();
 
-if (!root) throw new Error("Root is not present on the DOM");
+  const sync = () => {
+    element.refresh = sync;
+    const childrenElements = children(element);
+    if (childrenElements instanceof Array) {
+      element.replaceChildren(...childrenElements);
+    } else {
+      element.replaceChildren(childrenElements);
+    }
+
+    return element;
+  }
+
+  sync();
+  return element;
+}
 
 const render: RenderType = (tag, options) => {
   const element: HTMLElement & { refresh: () => void } = Object.assign(document.createElement(tag), { refresh: () => {} });
+  const childrens: HTMLElement[] = [];
   
   if (!options) return element;
   for (let opt of Object.entries(options) ) {
     if (isChildren(opt)) {
       const [, value] = opt;
-      value instanceof Array
-	? value.forEach(el => element.appendChild(el))
-	: element.appendChild(value);
+      if (value instanceof Array){
+	childrens.push(...value);
+	value.forEach(el => element.appendChild(el))
+      } else {
+	childrens.push(value);
+	element.appendChild(value);
+      }
       continue;
     }
 
@@ -34,14 +54,17 @@ const render: RenderType = (tag, options) => {
     }
   }
 
-  element.refresh = () => root.replaceChildren(render(tag, options));
+  element.refresh = () => element.replaceChildren(...childrens);
   return element;
 }
 
-const div = (options: OptionType<HTMLDivElement>) => render("div", options)
-const input = (options: OptionType<HTMLInputElement>) => render("input", options)
-const span = (options: OptionType<HTMLSpanElement>) => render("span", options)
-const h1 = (options: OptionType<HTMLTitleElement>) => render("h1", options)
+const div = (options?: OptionType<HTMLDivElement>) => render("div", options)
+const main = (options?: OptionType<HTMLDivElement>) => render("main", options)
+const input = (options?: OptionType<HTMLInputElement>) => render("input", options)
+const span = (options?: OptionType<HTMLSpanElement>) => render("span", options)
+const h1 = (options?: OptionType<HTMLTitleElement>) => render("h1", options)
+const h2 = (options?: OptionType<HTMLTitleElement>) => render("h2", options)
+const img = (options?: OptionType<HTMLImageElement>) => render("img", options)
 
 const isChildren = (target: [string, unknown]): target is [string, ChildrenType] => {
   const [key, value] = target;
