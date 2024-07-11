@@ -7,12 +7,12 @@ Front-end framework de javascript (uau!!). Objetivo: ser tão simples ao ponto d
 ```html
 <!-- ./src/index.html -->
 <html>
-	<head><title>Kitto!</title><head>
-	<body>
-		<div id="root"></div>
-		<script src="../dist/index.js"></script>
-		<script src="../dist/app.js"></script>
-	</body>
+  <head><title>Kitto!</title><head>
+  <body>
+    <div id="root"></div>
+    <script src="../dist/index.js"></script>
+    <script src="../dist/app.js"></script>
+  </body>
 </html>
 ```
 
