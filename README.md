@@ -4,6 +4,25 @@ Front-end framework de javascript (uau!!). Objetivo: ser tão simples ao ponto d
 
 ## Como começar
 
+Clone o repositório, entre no diretório do projeto:
+```
+git clone https://github.com/leolace/kitto.git
+cd kitto/
+```
+
+Compile o typescript para gerar arquivos .js dentro de `dist/`
+```
+tsc
+```
+
+Inicie um servidor local dentro de `src/`:
+```
+cd src/
+python3 -m http.server 3000
+```
+
+Em seu navegador, navegue até `http://localhost:3000`.
+
 ```html
 <!-- ./src/index.html -->
 <html>
