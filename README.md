@@ -41,22 +41,24 @@ if (!root) throw new Error("Root is not present on the DOM");
 
 interface ICard {
   name: string
+  imageSrc: string
 }
 
-const card = ({ name }: ICard) => {
+const card = ({ name, imageSrc }: ICard) => {
   let count = 0;
 
-  return view((el) => div({
+  return view(({ refresh }) => div({
     children:
     [
       img({
-	src: "https://i.pinimg.com/736x/99/30/a2/9930a2286fe7a6daa7f39f7de6f38166.jpg",
+	src: imageSrc,
 	style: "max-height: 100%; width: 20rem",
-	onclick: () => {count++; el.refresh();}
+	onclick: () => {count++; refresh();}
       }),
-      h2({ textContent: `${name} | ${count}` })
+      h2({ textContent: `${name} | ${count}` }),
+      p({ textContent: "Clique na imagem para incrementar", style: "color: #777" })
     ],
-    style: "padding: 1rem; background-color: #ddd"
+    style: "padding: 1rem; background-color: #eee"
   })
 )
 }
@@ -65,7 +67,7 @@ const header = div({
   children: div({
     children: [
       h1({
-	textContent: "Sofis Shop",
+	textContent: "X Store",
 	style: "font-size: 2rem; color: black; font-weight: 600",
       }),
       input({ placeholder: "Procurar...", onblur: () => alert("oi"), style: "padding: 0.25rem 0.5rem; border: 1px solid #ddd; border-radius: 0.25rem; font-size: 1rem;",  })
@@ -80,10 +82,7 @@ const el = main({
     header,
     div({
       children:
-      [
-	card({ name: "Prikito azedo" }),
-	card({ name: "Prikito doce" }),
-      ],
+      [card({ name: "Produto X", imageSrc: "https://picsum.photos/500" }), card({ name: "Produto Y", imageSrc: "https://picsum.photos/400" })],
       style: "display: grid; gap: 1rem;"
     })
   ],
