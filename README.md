@@ -10,8 +10,9 @@ git clone https://github.com/leolace/kitto.git
 cd kitto/
 ```
 
-Compile o typescript para gerar arquivos .js dentro de `dist/`
+Instale as dependências e compile o typescript para gerar arquivos .js dentro de `dist/`
 ```
+npm install
 tsc
 ```
 
