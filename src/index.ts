@@ -2,13 +2,33 @@ type TagType = keyof HTMLElementTagNameMap;
 type ChildrenType = HTMLElement | HTMLElement[];
 type OptionTypeWithChildren<T> = {[key in keyof T]?: unknown} & {children?: ChildrenType };
 type OptionType<T> = {[key in keyof T]?: unknown};
-type RenderType = <T>(tag: TagType, options?: OptionTypeWithChildren<T> | OptionType<T>) => HTMLElement & { refresh: () => void };
+type ElementType = HTMLElement & { refresh: () => void };
+type RenderType = <T>(tag: TagType, options?: OptionTypeWithChildren<T> | OptionType<T>) => ElementType;
+type RouteType = Record<string, () => ElementType>;
 
-const view = (children: (callback: HTMLElement & { refresh: () => void }) => ChildrenType) => {
-  const element: HTMLElement & { refresh: () => void } = div();
+function route(routes: (callback: ElementType) => RouteType) {
+  const element = div();
 
-  const sync = () => {
-    element.refresh = sync;
+  function sync() {
+    let hashLocation = document.location.hash.split("#")[1];
+    if (!hashLocation) {
+      hashLocation = "/";
+    }
+
+    element.replaceChildren(routes(element)[hashLocation]());
+    return element;
+  }
+  sync();
+  window.addEventListener("hashchange", sync);
+
+  return element;
+}
+
+function view(children: (callback: ElementType) => ChildrenType) {
+  const element: ElementType = div();
+
+  const refresh = () => {
+    element.refresh = refresh;
     const childrenElements = children(element);
     if (childrenElements instanceof Array) {
       element.replaceChildren(...childrenElements);
@@ -19,26 +39,25 @@ const view = (children: (callback: HTMLElement & { refresh: () => void }) => Chi
     return element;
   }
 
-  sync();
+  refresh();
   return element;
 }
 
 const render: RenderType = (tag, options) => {
-  const element: HTMLElement & { refresh: () => void } = Object.assign(document.createElement(tag), { refresh: () => {} });
+  const element: ElementType = Object.assign(document.createElement(tag), { refresh: () => {} });
   const childrens: HTMLElement[] = [];
   
   if (!options) return element;
   for (let opt of Object.entries(options) ) {
     if (isChildren(opt)) {
       const [, value] = opt;
-      if (value instanceof Array){
+      if (value instanceof Array) {
 	childrens.push(...value);
 	value.forEach(el => element.appendChild(el))
       } else {
 	childrens.push(value);
 	element.appendChild(value);
       }
-      continue;
     }
 
     if (isHTMLAttribute<HTMLElementTagNameMap[typeof tag]>(tag, opt)) {
@@ -58,13 +77,27 @@ const render: RenderType = (tag, options) => {
   return element;
 }
 
-const div = (options?: OptionType<HTMLDivElement>) => render("div", options)
+function div(arg?: OptionType<HTMLDivElement>): ElementType
+function div(arg?: ChildrenType): ElementType
+
+function div(arg?: OptionType<HTMLDivElement> | ChildrenType) {
+  if (arg instanceof HTMLElement || arg instanceof Array) {
+    return render("div", { children: arg });
+  } else {
+    return render("div", arg);
+  }
+}
+
 const main = (options?: OptionType<HTMLDivElement>) => render("main", options)
 const input = (options?: OptionType<HTMLInputElement>) => render("input", options)
 const span = (options?: OptionType<HTMLSpanElement>) => render("span", options)
 const h1 = (options?: OptionType<HTMLTitleElement>) => render("h1", options)
 const h2 = (options?: OptionType<HTMLTitleElement>) => render("h2", options)
 const img = (options?: OptionType<HTMLImageElement>) => render("img", options)
+const button = (options?: OptionType<HTMLButtonElement>) => render("button", options)
+const pre = (options?: OptionType<HTMLPreElement>) => render("pre", options)
+const p = (options?: OptionType<HTMLParagraphElement>) => render("p", options)
+const a = (options?: OptionType<HTMLLinkElement>) => render("a", options)
 
 const isChildren = (target: [string, unknown]): target is [string, ChildrenType] => {
   const [key, value] = target;

@@ -1,8 +1,22 @@
 "use strict";
-const view = (children) => {
+function route(routes) {
     const element = div();
-    const sync = () => {
-        element.refresh = sync;
+    function sync() {
+        let hashLocation = document.location.hash.split("#")[1];
+        if (!hashLocation) {
+            hashLocation = "/";
+        }
+        element.replaceChildren(routes(element)[hashLocation]());
+        return element;
+    }
+    sync();
+    window.addEventListener("hashchange", sync);
+    return element;
+}
+function view(children) {
+    const element = div();
+    const refresh = () => {
+        element.refresh = refresh;
         const childrenElements = children(element);
         if (childrenElements instanceof Array) {
             element.replaceChildren(...childrenElements);
@@ -12,9 +26,9 @@ const view = (children) => {
         }
         return element;
     };
-    sync();
+    refresh();
     return element;
-};
+}
 const render = (tag, options) => {
     const element = Object.assign(document.createElement(tag), { refresh: () => { } });
     const childrens = [];
@@ -65,6 +79,7 @@ const img = (options) => render("img", options);
 const button = (options) => render("button", options);
 const pre = (options) => render("pre", options);
 const p = (options) => render("p", options);
+const a = (options) => render("a", options);
 const isChildren = (target) => {
     const [key, value] = target;
     if (key && value && key === "children" && typeof value === "object")

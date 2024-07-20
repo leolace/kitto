@@ -39,16 +39,29 @@ const header = div({
   style: "padding: 1rem; background-color: #eee",
 });
 
-const el = main({
-  children: [
-    header,
-    div({
-      children:
+let count = 0;
+const counter = () => {
+
+  return view(({ refresh }) => div({ textContent: count, onclick: () => {count++; refresh();} }));
+}
+
+const el = route(({ refresh }) => ({
+  "/": () => main({
+    children: [
+      header,
+      div({
+	children:
       [card({ name: "Produto X", imageSrc: "https://picsum.photos/500" }), card({ name: "Produto Y", imageSrc: "https://picsum.photos/400" })],
-      style: "display: grid; gap: 1rem;"
-    })
-  ],
-  style: "display: grid; gap: 1rem;"
-})
+	style: "display: grid; gap: 1rem;"
+      }),
+      counter(),
+      a({ textContent: "navegar para teste", href: "#/test" }),
+      button({ onclick: refresh, textContent: "atualizar" })
+    ],
+    style: "display: grid; gap: 1rem;"
+  }),
+  "/test": () => a({ textContent: "navegar para home", href: "#/" }),
+  "/foo": () => a({ textContent: "navegar para /test", href: "#/test" }),
+}))
 
 root.appendChild(el);
